@@ -3,6 +3,7 @@ package com.springboot.crudProject.Controller;
 import com.springboot.crudProject.Model.userDTO;
 import com.springboot.crudProject.Model.userModel;
 import com.springboot.crudProject.Model.userResponse;
+import com.springboot.crudProject.Model.userSearch;
 import com.springboot.crudProject.Service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,9 @@ public class userController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/Users")
-    public ResponseEntity<userResponse<List<userDTO>>> getAllUsers() {
-        userResponse<List<userDTO>> response = userService.getAllUsers();
+    @PostMapping("/Users")
+    public ResponseEntity<userResponse<List<userDTO>>> searchUsers(@RequestBody userSearch searchRequest) {
+        userResponse<List<userDTO>> response = userService.getAllUsers(searchRequest.getSearch());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

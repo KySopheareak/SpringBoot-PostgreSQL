@@ -35,12 +35,20 @@ public class userService {
     }
 
     // Get all users
-    public userResponse<List<userDTO>> getAllUsers() {
-        List<userDTO> users = userRepo.findAll()
-            .stream()
-            .map(this::convertToDTO)
-            .collect(Collectors.toList());
-        return new userResponse<>("User list fetched successfully", users);
+    public userResponse<List<userDTO>> getAllUsers(String search) {
+        List<userModel> users;
+        if (search == null || search.trim().isEmpty() || !search.matches(".*\\S.*")) {
+            users = userRepo.findAll();
+        } else {
+            String lowerSearch = search.toLowerCase();
+            users = userRepo.findAll().stream().filter(user ->
+                    (user.getName() != null && user.getName().toLowerCase().contains(lowerSearch)) ||
+                    (user.getEmail() != null && user.getEmail().toLowerCase().contains(lowerSearch)) ||
+                    (user.getPhone() != null && user.getPhone().toLowerCase().contains(lowerSearch))
+                ).collect(Collectors.toList());
+        }
+        List<userDTO> userDTOs = users.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return new userResponse<>("User list fetched successfully", userDTOs);
     }
 
     // Get user by id
