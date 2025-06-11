@@ -1,13 +1,13 @@
-package com.springboot.crudProject.Model;
+package com.springboot.crudProject.Utils;
 
-public class userResponse<T> {
+public class utilResponse<T> {
     private String message;
     private T data;
 
-    public userResponse() {
+    public utilResponse() {
     }
 
-    public userResponse(String message, T data) {
+    public utilResponse(String message, T data) {
         this.message = message;
         this.data = data;
     }

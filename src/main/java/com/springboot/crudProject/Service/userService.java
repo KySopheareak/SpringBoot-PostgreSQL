@@ -2,8 +2,9 @@ package com.springboot.crudProject.Service;
 
 import com.springboot.crudProject.Model.userModel;
 import com.springboot.crudProject.Model.userDTO;
-import com.springboot.crudProject.Model.userResponse;
 import com.springboot.crudProject.Repository.userRepo;
+import com.springboot.crudProject.Utils.utilResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +30,13 @@ public class userService {
     }
 
     // Create user
-    public userResponse<userDTO> createUser(userModel user) {
+    public utilResponse<userDTO> createUser(userModel user) {
         userModel savedUser = userRepo.save(user);
-        return new userResponse<>("User created successfully", convertToDTO(savedUser));
+        return new utilResponse<>("User created successfully", convertToDTO(savedUser));
     }
 
     // Get all users
-    public userResponse<List<userDTO>> getAllUsers(String search) {
+    public utilResponse<List<userDTO>> getAllUsers(String search) {
         List<userModel> users;
         if (search == null || search.trim().isEmpty() || !search.matches(".*\\S.*")) {
             users = userRepo.findAll();
@@ -48,21 +49,21 @@ public class userService {
                 ).collect(Collectors.toList());
         }
         List<userDTO> userDTOs = users.stream().map(this::convertToDTO).collect(Collectors.toList());
-        return new userResponse<>("User list fetched successfully", userDTOs);
+        return new utilResponse<>("User list fetched successfully", userDTOs);
     }
 
     // Get user by id
-    public userResponse<userDTO> getUserById(Long id) {
+    public utilResponse<userDTO> getUserById(Long id) {
         Optional<userModel> user = userRepo.findById(id);
         if (user.isPresent()) {
-            return new userResponse<>("User found", convertToDTO(user.get()));
+            return new utilResponse<>("User found", convertToDTO(user.get()));
         } else {
-            return new userResponse<>("User not found", null);
+            return new utilResponse<>("User not found", null);
         }
     }
 
     // Update user
-    public userResponse<userDTO> updateUser(Long id, userModel userDetails) {
+    public utilResponse<userDTO> updateUser(Long id, userModel userDetails) {
         Optional<userModel> optionalUser = userRepo.findById(id);
         if (optionalUser.isPresent()) {
             userModel user = optionalUser.get();
@@ -71,19 +72,19 @@ public class userService {
             user.setPhone(userDetails.getPhone());
             user.setAddress(userDetails.getAddress());
             userModel updatedUser = userRepo.save(user);
-            return new userResponse<>("User updated successfully", convertToDTO(updatedUser));
+            return new utilResponse<>("User updated successfully", convertToDTO(updatedUser));
         } else {
-            return new userResponse<>("User not found", null);
+            return new utilResponse<>("User not found", null);
         }
     }
 
     // Delete user
-    public userResponse<Void> deleteUser(Long id) {
+    public utilResponse<Void> deleteUser(Long id) {
         if (userRepo.existsById(id)) {
             userRepo.deleteById(id);
-            return new userResponse<>("User deleted successfully", null);
+            return new utilResponse<>("User deleted successfully", null);
         } else {
-            return new userResponse<>("User not found", null);
+            return new utilResponse<>("User not found", null);
         }
     }
 }

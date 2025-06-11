@@ -1,6 +1,6 @@
-package com.springboot.crudProject.Model;
+package com.springboot.crudProject.Utils;
 
-public class userSearch {
+public class utliSearch {
     private String search;
 
     public String getSearch() {
