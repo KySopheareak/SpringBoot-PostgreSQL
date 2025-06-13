@@ -10,6 +10,7 @@ import com.springboot.crudProject.Utils.utilResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,18 +28,16 @@ public class productService {
     // Convert productModel to productDTO
     private productDTO convertToDTO(productModel product) {
         return new productDTO(
-            product.getId(),
-            product.getName(),
-            product.getDescription(),
-            product.getPrice(),
-            product.getCategory() != null
-                ? new categoryDTO(
-                    product.getCategory().getId(),
-                    product.getCategory().getName(),
-                    product.getCategory().getDescription()
-                )
-                : null
-        );
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                product.getCategory() != null
+                        ? new categoryDTO(
+                                product.getCategory().getId(),
+                                product.getCategory().getName(),
+                                product.getCategory().getDescription())
+                        : null);
     }
 
     // Create product
@@ -56,13 +55,20 @@ public class productService {
     public utilResponse<List<productDTO>> getAllProducts(String search) {
         List<productModel> products;
         if (search == null || search.trim().isEmpty() || !search.matches(".*\\S.*")) {
-            products = productRepo.findAll();
+            products = productRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
         } else {
             String lowerSearch = search.toLowerCase();
-            products = productRepo.findAll().stream().filter(product ->
-                    (product.getName() != null && product.getName().toLowerCase().contains(lowerSearch)) ||
-                    (product.getDescription() != null && product.getDescription().toLowerCase().contains(lowerSearch))
-                ).collect(Collectors.toList());
+            products = productRepo.findAll().stream().filter(
+                    product -> (product.getName() != null && product.getName().toLowerCase().contains(lowerSearch)) ||
+                            (product.getDescription() != null
+                                    && product.getDescription().toLowerCase().contains(lowerSearch)))
+                    .sorted((p1, p2) -> {
+                        if (p1.getName() == null)
+                            return -1;
+                        if (p2.getName() == null)
+                            return 1;
+                        return p1.getName().compareToIgnoreCase(p2.getName());
+                    }).collect(Collectors.toList());
         }
         List<productDTO> productDTOs = products.stream().map(this::convertToDTO).collect(Collectors.toList());
         return new utilResponse<>("Product list fetched successfully", productDTOs);
